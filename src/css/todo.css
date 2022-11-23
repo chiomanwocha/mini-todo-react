@@ -1,0 +1,117 @@
+.todo-app{
+    /* width: 70vw; */
+    margin: 0 auto;
+}
+.greetings{
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-right: 30px;
+    padding-top: 60px
+}
+.greetings > p {
+    font-weight: 900;
+    font-size: 20px;
+    margin-right: 10px;
+}
+.todo-list{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    width: 80vw;
+    margin: 0 auto;
+}
+.todo-list > div{
+    background-color: hsla(0, 0%, 100%, .1);
+    margin:10px 20px 0 0;
+    padding: 0 10px;
+    border: 1px solid white;
+    border-radius: 10px;
+    font-weight: 900;
+    /* color: black */
+}
+#todo-item{
+    width: 30vw;
+    margin-right: 5px;
+    padding: 5px;
+    width: 25vw;
+        border-radius: 9px;
+        outline: none;
+        padding: 10px;
+        border: 1px solid;
+        margin: 10px;
+        font-size: 16px;
+        background-color: #C2BAFD;
+        color: white;
+        font-weight: 900;
+}
+input[type="text"]{
+    padding: 5px 2px;
+    margin-right: 5px;
+    /* width: 25vw; */
+        border-radius: 5px;
+        outline: none;
+        padding: 0px 10px;
+        border: 1px solid;
+        /* margin: 10px; */
+        font-size: 16px;
+        background-color: #C2BAFD;
+        color: white;
+        font-weight: 900;
+}
+    ::placeholder{
+        color: white
+    }
+button{
+    /* padding: 5px 15px; */
+    margin-right: 5px;
+    font-size: 16px;
+    background-color: hsl(0, 0%, 100%);
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    font-weight: 900;
+    box-shadow: rgb(202, 202, 202) 0px 0px 10px;
+}
+button:hover{
+    background-color: hsl(0, 0%, 95%);
+    transition: .1s;
+}
+button.add-todo{
+    padding: 10px 15px;
+}
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0;
+}
+li{
+    text-align: justify;
+}
+li p {
+    display: inline-block
+}
+/* .done{
+    text-decoration: line-through;
+} */
+.not-editing{
+    display: grid;        
+    grid-template-columns: 2vw 13vw 4vw 5vw;
+    align-items: center;
+    /* width: 40vw; */
+    margin: 0 auto;
+    text-align: left;
+}
+.editing{
+    display: grid;
+    grid-template-columns: 19vw 5vw;
+    margin: 0 auto;
+}
+.todo, .doing, .todo-done{
+    max-height: 50vh;
+    overflow-y: scroll;
+}
+.doing-box{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
