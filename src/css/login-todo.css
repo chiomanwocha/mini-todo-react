@@ -16,19 +16,8 @@
 div > p:first-child{
     font-weight: 900;
 }
-input[type="text"]{
-    /* width: 25vw; */
-    border-radius: 9px;
-    outline: none;
-    padding: 10px;
-    border: 1px solid;
-    /* margin: 20px; */
-    font-size: 16px;
-    background-color: #C2BAFD;
-    color: white;
-    font-weight: 900;
-}
-input[type="email"]{
+
+.details{
     width: 25vw;
     border-radius: 9px;
     outline: none;

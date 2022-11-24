@@ -10,9 +10,9 @@ const LoginTodo = () => {
                 <p>Glad to see you !</p>
             </div>
             <form >
-                <input type="email" name="email" id="email" required placeholder="Email Address" />
-                <button className='login-button'>Login</button>
-                <p>Don't have an account yet? <Link to="/todo">Sign up here</Link></p>
+                <input type="email" name="email" id="email" required placeholder="Email Address" className="details"/>
+                <Link to="/todo"><button className='login-button'>Login</button></Link>
+                <p>Don't have an account yet? <Link to="/signup">Sign up here</Link></p>
             </form>
         </div>
      );

@@ -44,7 +44,7 @@
         color: white;
         font-weight: 900;
 }
-input[type="text"]{
+.edit-item{
     padding: 5px 2px;
     margin-right: 5px;
     /* width: 25vw; */
@@ -88,7 +88,9 @@ li{
     text-align: justify;
 }
 li p {
-    display: inline-block
+    display: inline-block;
+    margin: 0;
+    /* padding: 10px 0; */
 }
 /* .done{
     text-decoration: line-through;
