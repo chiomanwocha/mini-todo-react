@@ -3,11 +3,9 @@ import './App.css';
 import LoginTodo from './todo-components/LoginTodo';
 import SignUp from './todo-components/SignUp';
 import TodoApp from './todo-components/TodoApp';
-import {useState} from 'react'
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
 
 function App() {
-  const [todoList, setTodoList] = useState([])
   return (
     <Router>
       <div className="App">
