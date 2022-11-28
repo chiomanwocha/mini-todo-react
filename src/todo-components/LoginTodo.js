@@ -22,7 +22,6 @@ const LoginTodo = () => {
         if (userEmail !== parsedDetails.email){
             return setShowNotExist(true)
         }
-        return userEmail
         // setShowEmpty(showEmpty) &&
     }
 

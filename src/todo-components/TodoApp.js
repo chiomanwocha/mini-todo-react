@@ -5,10 +5,31 @@ const TodoApp = () => {
     let userDetails = localStorage.getItem('userDetails')
     let parsedDetails = JSON.parse(userDetails)
     const [todoItem, setTodoItem] = useState('')
-    const [todoList, setTodoList] = useState([])
-    const [doingList, setDoingList] = useState([])
-    const [doneList, setDoneList] = useState([])
-    const [show, setShow] = useState(true);
+    const [todoList, setTodoList] = useState(() =>{
+        const savedTodos = localStorage.getItem("todoList");
+        if (savedTodos) {
+          return JSON.parse(savedTodos);
+        } else {
+          return [];
+        }
+      })
+    const [doingList, setDoingList] = useState(() => {
+        const savedDoing = localStorage.getItem("doingList");
+        if (savedDoing) {
+          return JSON.parse(savedDoing);
+        } else {
+          return [];
+        }
+      })
+    const [doneList, setDoneList] = useState(() => {
+        const savedDone = localStorage.getItem("doneList");
+        if (savedDone) {
+          return JSON.parse(savedDone);
+        } else {
+          return [];
+        }
+      })
+    const [currentTodo, setCurrentTodo] = useState({});
 
     const addTodo = () => {
         if(todoItem.trim() !== ''){
@@ -17,7 +38,8 @@ const TodoApp = () => {
                 text: todoItem,
                 done: false,
                 doing: false,
-                todo: true
+                todo: true,
+                isEditing: false
             }])
             setTodoItem('')
         }
@@ -37,12 +59,6 @@ const TodoApp = () => {
     }
     const updateTodoArray = ({id}) => {
         setTodoList(
-            // todoList.map((todoItem) => {
-            //     if (todoItem.id === todo.id){
-            //         return {...todoItem, doing: !todoItem.doing, todo: !todoItem.todo}
-            //     }
-            //     return todoItem
-            // })
             todoList.filter((todo) => todo.id !== id)
         )
     }
@@ -57,12 +73,6 @@ const TodoApp = () => {
     }
     const revertDoing = (id) => {
         setTodoList(
-            // todoList.map((todoItem) => {
-            //     if (todoItem.id === todo.id){
-            //         return {...todoItem, doing: !todoItem.doing, todo: !todoItem.todo}
-            //     }
-            //     return todoItem
-            // })
             [...todoList,{
                 id: doingList[id].id,
                 text: doingList[id].text,
@@ -101,6 +111,20 @@ const TodoApp = () => {
             doneList.filter(todoItem => todoItem.id !== id)
         )
     }
+    const editItem = (todo, index) => {
+        todoList[index].isEditing = true
+        setCurrentTodo({...todo});
+    }
+    const save = (id, updatedTodo, index) => {
+        const updatedItem = todoList.map((todo) => {
+            return todo.id === id ? updatedTodo : todo;
+          });
+        todoList[index].isEditing = false
+        setTodoList(updatedItem)
+    }
+    const handleEditInput = (e, index) => {
+        setCurrentTodo({...todoList[index], text: e.target.value});
+    }
 
     localStorage.setItem('todoList', JSON.stringify(todoList))
     localStorage.setItem('doingList', JSON.stringify(doingList))
@@ -118,19 +142,19 @@ const TodoApp = () => {
             <div className="todo">
                 <h2>todo</h2>
                 {todoList.map((todo, index) => (
-                        <ul key={todo.id}>
-                            { show ? 
-                                <li className="not-editing">
-                                    <input type="checkbox" name="done" id="done" onClick={() => [updateTodoArray(todo), addDoing(index)]} />
+                        <ul >
+                            { !todo.isEditing ? 
+                                <li className="not-editing" key={todo.id}>
+                                    <input type="checkbox" name="done" id="done" onClick={() => [updateTodoArray(todo), addDoing(index)]}/>
                                     <p>{todo.text}</p>
-                                    <button onClick={() => [setShow(!show)]}> Edit
+                                    <button onClick={() => [editItem(todo, index)]}> Edit
                                     </button>
                                     <button onClick={() => deleteTodo(todo)} >Delete</button>
                                 </li>
                                 :
-                                <li className="editing">
-                                    <input type="text" name="editItem" id="editItem" className="edit-item" value={todo.text}/>
-                                    <button onClick={() => setShow(!show)}>Save</button>
+                                <li className="editing" key={todo.id}>
+                                    <input type="text" name="editItem" id="editItem" className="edit-item" value={currentTodo.text} onChange={(e) => handleEditInput(e, index)} />
+                                    <button onClick={() => save(todo.id, currentTodo, index)}>Save</button>
                                 </li>
                             }
                             
@@ -141,8 +165,8 @@ const TodoApp = () => {
             <div className="doing">
                 <h2>doing</h2>
                 {doingList.map((todo, index) => (
-                        <ul key={todo.id}>
-                            <li className="doing-box">
+                        <ul>
+                            <li className="doing-box" key={todo.id}>
                                 <p>{todo.text}</p>
                                 <div>
                                     <button onClick={() => [revertDoing(index), updateDoingArray(todo)]}>Undo</button>
@@ -156,8 +180,8 @@ const TodoApp = () => {
             <div className="todo-done">
                 <h2>done</h2>
                 {doneList.map((todo, index) => (
-                        <ul key={todo.id}>
-                            <li>
+                        <ul>
+                            <li key={todo.id}>
                                 <input type="checkbox" name="done" id="done" checked={todo.done} onChange={() => [revertDone(index), updateDoneArray(todo)]}/>
                                 <p>{todo.text}</p>
                             </li>
@@ -167,7 +191,7 @@ const TodoApp = () => {
             </div> 
         </div>
     </div>
-     );
+    );
 }
  
 export default TodoApp;
