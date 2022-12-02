@@ -1,9 +1,9 @@
 import '../css/todo.css'
 import { Link } from 'react-router-dom'
 import { useState } from 'react'
-const TodoApp = () => { 
-    let userDetails = localStorage.getItem('userDetails')
-    let parsedDetails = JSON.parse(userDetails)
+
+const TodoApp = () => {
+    let parsedDetails = JSON.parse(localStorage.getItem('userDetails'))
     const [todoItem, setTodoItem] = useState('')
     const [todoList, setTodoList] = useState(() =>{
         const savedTodos = localStorage.getItem("todoList");
@@ -20,7 +20,7 @@ const TodoApp = () => {
         } else {
           return [];
         }
-      })
+    })
     const [doneList, setDoneList] = useState(() => {
         const savedDone = localStorage.getItem("doneList");
         if (savedDone) {
@@ -29,12 +29,14 @@ const TodoApp = () => {
           return [];
         }
       })
-    const [currentTodo, setCurrentTodo] = useState({});
+    const newTodoList = [...todoList]
+    const [newTodoItem, setNewTodoItem] = useState('')
 
-    const addTodo = () => {
+    const addTodo = (e) => {
+        e.preventDefault();
         if(todoItem.trim() !== ''){
              setTodoList([...todoList, {
-                id: Math.floor(Math.random() * 1000000000),
+                id: Math.floor(Math.random() * 100),
                 text: todoItem,
                 done: false,
                 doing: false,
@@ -47,21 +49,25 @@ const TodoApp = () => {
             alert('Your todo item can not be empty')
         }
     }
-    const keyDownHandler = (e) =>{
-        if(e.key === 'Enter'){
-            addTodo()
-        }
+
+    const deleteTodo = (index) => {
+        newTodoList.splice(index, 1)
+        setTodoList(newTodoList)
     }
-    const deleteTodo = ({id}) => {
-        setTodoList(
-            todoList.filter((todo) => todo.id !== id)
-        )
+
+    const editItem = (index) => {
+        newTodoList[index].isEditing = true
+        setTodoList(newTodoList)
     }
-    const updateTodoArray = ({id}) => {
-        setTodoList(
-            todoList.filter((todo) => todo.id !== id)
-        )
+
+    const save = (e, index) => {
+        e.preventDefault();
+        todoList[index].isEditing = false
+        newTodoList[index].text = newTodoItem
+        setTodoList(newTodoList)
     }
+
+    //additional functionalities
     const addDoing = (id) => {
         setDoingList([...doingList,{
                 id: todoList[id].id,
@@ -70,6 +76,30 @@ const TodoApp = () => {
                 doing: !todoList[id].doing,
                 todo: !todoList[id].todo
         }])
+    }
+    const addDone = (id) => {
+        setDoneList([...doneList, {
+                id: doingList[id].id,
+                text: doingList[id].text,
+                done: true,
+                doing: !doingList[id].doing,
+                todo: false
+        }])
+    }
+    const updateTodoArray = ({id}) => {
+        setTodoList(
+            todoList.filter((todo) => todo.id !== id)
+        )
+    }
+    const updateDoingArray = ({id}) => {
+        setDoingList(
+            doingList.filter((todoItem) => todoItem.id !== id)
+        )
+    }
+    const updateDoneArray = ({id}) => {
+        setDoneList(
+            doneList.filter(todoItem => todoItem.id !== id)
+        )
     }
     const revertDoing = (id) => {
         setTodoList(
@@ -82,20 +112,6 @@ const TodoApp = () => {
             }]
         )
     }
-    const updateDoingArray = ({id}) => {
-        setDoingList(
-            doingList.filter((todoItem) => todoItem.id !== id)
-        )
-    }
-    const addDone = (id) => {
-        setDoneList([...doneList, {
-                id: doingList[id].id,
-                text: doingList[id].text,
-                done: true,
-                doing: !doingList[id].doing,
-                todo: false
-        }])
-    }
     const revertDone = (id) => {
         setDoingList([...doingList, {
             id: doneList[id].id,
@@ -106,91 +122,77 @@ const TodoApp = () => {
         }]
         )
     }
-    const updateDoneArray = ({id}) => {
-        setDoneList(
-            doneList.filter(todoItem => todoItem.id !== id)
-        )
-    }
-    const editItem = (todo, index) => {
-        todoList[index].isEditing = true
-        setCurrentTodo({...todo});
-    }
-    const save = (id, updatedTodo, index) => {
-        const updatedItem = todoList.map((todo) => {
-            return todo.id === id ? updatedTodo : todo;
-          });
-        todoList[index].isEditing = false
-        setTodoList(updatedItem)
-    }
-    const handleEditInput = (e, index) => {
-        setCurrentTodo({...todoList[index], text: e.target.value});
-    }
+    
 
     localStorage.setItem('todoList', JSON.stringify(todoList))
     localStorage.setItem('doingList', JSON.stringify(doingList))
     localStorage.setItem('doneList', JSON.stringify(doneList))
-    return ( 
-        <div className="todo-app"> 
-        <div className="greetings">
-            <p >hi, {parsedDetails?.firstName} !</p>
-            <Link to="/"><button>logout</button></Link>
-        </div>
-        <h1>todos</h1>
-        <input type="text" name="todo-item" id="todo-item" placeholder="What do you need to do ?" required className="details"  value={todoItem} onChange={(e) => setTodoItem(e.target.value )} onKeyDown={keyDownHandler} />
-        <button className="add-todo" onClick={addTodo}>add</button>
-        <div className="todo-list">
-            <div className="todo">
-                <h2>todo</h2>
-                {todoList.map((todo, index) => (
-                        <ul >
-                            { !todo.isEditing ? 
-                                <li className="not-editing" key={todo.id}>
+
+    return (  
+        <div className="todo-app">
+            <div className="greetings">
+                <p >hi, {parsedDetails?.firstName} !</p>
+                <Link to="/"><button>logout</button></Link>
+            </div>
+            <h1>todos</h1>
+            <form onSubmit={(e) => addTodo(e)}>
+                <input type="text" name="todo-item" id="todo-item" placeholder="What do you need to do ?" required className="details"  value={todoItem} onChange={(e) => setTodoItem(e.target.value )} />
+                <button className="add-todo">add</button>
+            </form>
+            <div className="todo-list">
+                <div className="todo">
+                    <h2>todo</h2>
+                    {todoList.map((todo, index) => (
+                        <ul key={todo.id}>
+                            {!todo.isEditing ?
+                                <li className="not-editing">
                                     <input type="checkbox" name="done" id="done" onClick={() => [updateTodoArray(todo), addDoing(index)]}/>
                                     <p>{todo.text}</p>
-                                    <button onClick={() => [editItem(todo, index)]}> Edit
+                                    <button onClick={() => editItem(index)}> Edit
                                     </button>
-                                    <button onClick={() => deleteTodo(todo)} >Delete</button>
+                                    <button onClick={() => deleteTodo(index)}>Delete</button>
                                 </li>
                                 :
-                                <li className="editing" key={todo.id}>
-                                    <input type="text" name="editItem" id="editItem" className="edit-item" value={currentTodo.text} onChange={(e) => handleEditInput(e, index)} />
-                                    <button onClick={() => save(todo.id, currentTodo, index)}>Save</button>
+                                <li className="editing">
+                                    <form onSubmit={(e) => save(e, index)}>
+                                        <input type="text" name="editItem" id="editItem" className="edit-item" defaultValue={newTodoList[index].text}  onChange={(e) => setNewTodoItem(e.target.value)}/>
+                                            <button type='submit'>Save</button>
+                                        </form>
                                 </li>
                             }
-                            
                         </ul>
-                    )
-                )}
+                        )
+                    )}
+                </div>
+                <div className="doing">
+                    <h2>doing</h2>
+                        {doingList.map((todo, index) => (
+                                <ul key={todo.id}>
+                                    <li className="doing-box" key={index}>
+                                        <p>{todo.text}</p>
+                                        <div>
+                                            <button onClick={() => [revertDoing(index), updateDoingArray(todo)]}>Undo</button>
+                                            <button onClick={() => [addDone(index), updateDoingArray(todo)]}>Done</button>
+                                        </div>
+                                    </li>
+                                </ul>
+                            )
+                        )}
+                </div>
+                <div className="todo-done">
+                    <h2>done</h2>
+                    {doneList.map((todo, index) => (
+                            <ul key={todo.id}>
+                                <li>
+                                    <input type="checkbox" name="done" id="done" checked={todo.done} onChange={() => [revertDone(index), updateDoneArray(todo)]}/>
+                                    <p>{todo.text}</p>
+                                </li>
+                            </ul>
+                        )
+                    )}
+                </div> 
             </div>
-            <div className="doing">
-                <h2>doing</h2>
-                {doingList.map((todo, index) => (
-                        <ul>
-                            <li className="doing-box" key={todo.id}>
-                                <p>{todo.text}</p>
-                                <div>
-                                    <button onClick={() => [revertDoing(index), updateDoingArray(todo)]}>Undo</button>
-                                    <button onClick={() => [addDone(index), updateDoingArray(todo)]}>Done</button>
-                                </div>
-                            </li>
-                        </ul>
-                    )
-                )}
-            </div>
-            <div className="todo-done">
-                <h2>done</h2>
-                {doneList.map((todo, index) => (
-                        <ul>
-                            <li key={todo.id}>
-                                <input type="checkbox" name="done" id="done" checked={todo.done} onChange={() => [revertDone(index), updateDoneArray(todo)]}/>
-                                <p>{todo.text}</p>
-                            </li>
-                        </ul>
-                    )
-                )}
-            </div> 
         </div>
-    </div>
     );
 }
  

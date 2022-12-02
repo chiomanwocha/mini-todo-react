@@ -25,7 +25,7 @@ const SignUp = () => {
     }
     localStorage.setItem('userDetails', JSON.stringify(userDetails))
     if(redirect){
-        return <Redirect to='/' />
+        return <Redirect to='/todo' />
     }
     return (
         <div className="container">

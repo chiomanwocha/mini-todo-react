@@ -1,49 +1,42 @@
 import '../css/login-todo.css'
 import { Link,  Redirect} from 'react-router-dom'
-import { useState} from 'react'
+import { useState } from 'react'
 
 const LoginTodo = () => {
-    let userDetails = localStorage.getItem('userDetails')
-    let parsedDetails = JSON.parse(userDetails)
     const [userEmail, setUserEmail] = useState('')
+    const [exist, setExist] = useState(true)
     const [redirect, setRedirect] = useState(false)
-    const [showNotExist, setShowNotExist] = useState(false)
-    // const [showEmpty, setShowEmpty] = useState(false)
 
     const checkUser = (e) => { 
         e.preventDefault();
-        if(userEmail === parsedDetails.email){
-            return setRedirect(true)
-        } 
-        // if(userEmail.length === 0){
-        //     return setShowEmpty(true) && showNotExist(false)
-        //     // && setShowNotExist(showNotExist)
-        // } 
-        if (userEmail !== parsedDetails.email){
-            return setShowNotExist(true)
+        const userDetails = JSON.parse(localStorage.getItem('userDetails'))
+        if(userEmail.length === 0 || userDetails === null || userDetails.email !== userEmail){
+            setExist(false)
+            setUserEmail('')
         }
-        // setShowEmpty(showEmpty) &&
+        if(userDetails.email === userEmail){
+            setExist(true)
+            setRedirect(true)
+        }
     }
 
     if(redirect){
         return <Redirect to='/todo' />
     }
-    // console.log(`showNotExist, ${showNotExist} && showEmpty, ${showEmpty}`)
+
     return ( 
         <div className="container">
-            {showNotExist ? 
-                <p>this email does not exist !</p>
-            : null}
-            {/* {showEmpty ? 
-                <p>email can not be empty</p>
-            : null} */}
+            {!exist?
+                <p>email doesn't exist, please register</p>
+                : 
+                null
+            }
             <div className="welcome-hero">
                 <p>Welcome,</p>
                 <p>Glad to see you !</p>
             </div>
             <form >
                 <input type="email" name="email" id="email" required placeholder="Email Address" className="details" value={userEmail} onChange={(e) => setUserEmail(e.target.value)}/>
-                {/* <Link to="/" onClick={checkUser}><button className='login-button'>Login</button></Link> */}
                 <button className='login-button' onClick={(e) => checkUser(e)}>Login</button>
                 <p>Don't have an account yet? <Link to="/signup">Sign up here</Link></p>
             </form>
