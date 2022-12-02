@@ -63,8 +63,14 @@ const TodoApp = () => {
     const save = (e, index) => {
         e.preventDefault();
         todoList[index].isEditing = false
-        newTodoList[index].text = newTodoItem
-        setTodoList(newTodoList)
+        if(newTodoItem.length !== 0){
+            newTodoList[index].text = newTodoItem 
+            setTodoList(newTodoList)
+            setNewTodoItem('')
+        } else {
+            setTodoList(newTodoList)
+        }
+        
     }
 
     //additional functionalities
@@ -155,7 +161,7 @@ const TodoApp = () => {
                                 :
                                 <li className="editing">
                                     <form onSubmit={(e) => save(e, index)}>
-                                        <input type="text" name="editItem" id="editItem" className="edit-item" defaultValue={newTodoList[index].text}  onChange={(e) => setNewTodoItem(e.target.value)}/>
+                                        <input type="text" name="editItem" id="editItem" className="edit-item" defaultValue={todoList[index].text}  onChange={(e) => setNewTodoItem(e.target.value)}/>
                                             <button type='submit'>Save</button>
                                         </form>
                                 </li>
