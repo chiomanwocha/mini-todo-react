@@ -1,29 +1,42 @@
 import { Link, Redirect } from 'react-router-dom'
 import { useState } from 'react'
 import '../css/signup.css'
+import axios from 'axios'
 
 const SignUp = () => {
     const [firstName, setFirstName] = useState('')
     const [lastName, setLastName] = useState('')
     const [email, setEmail] = useState('')
-    const [userDetails, setUserDetails] = useState([])
+    const [userExist, setUserExist] = useState(false)
     const [redirect, setRedirect] = useState(false)
 
     const createAccount = (e) => {
         e.preventDefault()
-        setUserDetails(...userDetails, {
-            id: Math.floor(Math.random() * 10000),
-            firstName: firstName,
-            lastName: lastName,
-            email: email
+        setUserExist(false)
+        axios
+        .get('https://6391a596b750c8d178c8e2e7.mockapi.io/users')
+        .then((response) => {
+            ((response.data).filter((user) => (user.email === email))).length === 0 ?
+            axios
+            .post('https://6391a596b750c8d178c8e2e7.mockapi.io/users', {
+                    firstName: firstName,
+                    lastName: lastName,
+                    email: email
+            })
+            .then((response) => {
+                    console.log(response);
+            })
+            .catch((error) => {
+                    alert(error);
+            })
+            : setUserExist(true)
         })
         setFirstName('')
         setLastName('')
         setEmail('')
-        alert('registration successful !')
+        alert('Registration successful !')
         setRedirect(true)
     }
-    localStorage.setItem('userDetails', JSON.stringify(userDetails))
     if(redirect){
         return <Redirect to='/todo' />
     }
@@ -34,6 +47,7 @@ const SignUp = () => {
                     <p>Create Account</p>
                     <p>to get started now !</p>
                 </div>
+                {userExist && <p>Please register with another email, email already exist !</p>}
                 <div className="firstname">
                     <input type="text" id="firstname" name="firstname" placeholder="First Name" required className="signup-details" value={firstName} onChange={(e) => setFirstName(e.target.value)}/>
                 </div>
