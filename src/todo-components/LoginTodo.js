@@ -1,24 +1,45 @@
 import '../css/login-todo.css'
 import { Link,  Redirect} from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
+import Loader from './Loader'
 
 const LoginTodo = () => {
     const [userEmail, setUserEmail] = useState('')
     const [exist, setExist] = useState(true)
+    const [blank, setBlank] = useState(false)
     const [redirect, setRedirect] = useState(false)
+    const [loader, setLoader] = useState(false)
 
     const checkUser = (e) => { 
         e.preventDefault();
-        const userDetails = JSON.parse(localStorage.getItem('userDetails'))
-        if(userEmail.length === 0 || userDetails === null || userDetails.email !== userEmail){
-            setExist(false)
-            setUserEmail('')
-        }
-        if(userDetails.email === userEmail){
-            setExist(true)
-            setRedirect(true)
+        setBlank(false)
+        setExist(true)
+        if(userEmail.length === 0){
+            setBlank(true) 
+        } else{
+            setLoader(true)
+            axios
+            .get('https://6391a596b750c8d178c8e2e7.mockapi.io/users')
+            .then((response) => {
+                if((response.data).filter((user) => user.email === userEmail).length > 0){
+                    setExist(true)
+                    setRedirect(true)
+                } else {
+                    setLoader(false)
+                    setUserEmail('')
+                    setExist(false)
+                }
+            })
+            .catch((error) => {
+                console.log(error)
+            })
         }
     }
+
+    useEffect(() => {
+        setExist(true)
+    }, [])
 
     if(redirect){
         return <Redirect to='/todo' />
@@ -26,20 +47,25 @@ const LoginTodo = () => {
 
     return ( 
         <div className="container">
-            {!exist?
-                <p>email doesn't exist, please register</p>
-                : 
-                null
-            }
             <div className="welcome-hero">
                 <p>Welcome,</p>
                 <p>Glad to see you !</p>
             </div>
-            <form >
-                <input type="email" name="email" id="email" required placeholder="Email Address" className="details" value={userEmail} onChange={(e) => setUserEmail(e.target.value)}/>
-                <button className='login-button' onClick={(e) => checkUser(e)}>Login</button>
-                <p>Don't have an account yet? <Link to="/signup">Sign up here</Link></p>
-            </form>
+            {loader ?
+                <div className='login-loader'>
+                    <Loader />
+                </div> 
+                :
+                <div>
+                    {blank && <p className='error'>User email can not be blank !</p>}
+                    {!exist && <p className='error'>email doesn't exist, please register</p>}
+                    <form >
+                        <input type="email" name="email" id="email" required placeholder="Email Address" className="details" value={userEmail} onChange={(e) => setUserEmail(e.target.value)} autoFocus/>
+                        <button className='login-button' onClick={(e) => checkUser(e)}>Login</button>
+                    </form>
+                </div>
+            }
+            <p>Don't have an account yet? <Link to="/signup">Sign up here</Link></p>
         </div>
      );
 }

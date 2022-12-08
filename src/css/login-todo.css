@@ -3,9 +3,6 @@
     margin: 0 auto;
     padding: 90px 0 30px;
 }
-.container > p{
-    color: red
-}
 .welcome-hero{
     font-size: 32px;
     margin-bottom: 55px
@@ -55,4 +52,9 @@ a{
 button:hover{
   background-color: hsl(0, 0%, 95%);
   transition: .1s;
+}
+.login-loader{
+    height: 119px;
+    align-items: center;
+    display: flex;
 }

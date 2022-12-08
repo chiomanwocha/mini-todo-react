@@ -2,6 +2,7 @@ import { Link, Redirect } from 'react-router-dom'
 import { useState } from 'react'
 import '../css/signup.css'
 import axios from 'axios'
+import Loader from './Loader'
 
 const SignUp = () => {
     const [firstName, setFirstName] = useState('')
@@ -9,33 +10,34 @@ const SignUp = () => {
     const [email, setEmail] = useState('')
     const [userExist, setUserExist] = useState(false)
     const [redirect, setRedirect] = useState(false)
+    const [loader, setLoader] = useState(false)
 
     const createAccount = (e) => {
+        setLoader(true)
         e.preventDefault()
-        setUserExist(false)
+        setUserExist(true)
         axios
         .get('https://6391a596b750c8d178c8e2e7.mockapi.io/users')
         .then((response) => {
             ((response.data).filter((user) => (user.email === email))).length === 0 ?
             axios
             .post('https://6391a596b750c8d178c8e2e7.mockapi.io/users', {
-                    firstName: firstName,
-                    lastName: lastName,
-                    email: email
+                firstName: firstName,
+                lastName: lastName,
+                email: email
             })
             .then((response) => {
-                    console.log(response);
+                return (response);
             })
             .catch((error) => {
-                    alert(error);
+                alert(error);
             })
-            : setUserExist(true)
+            && setRedirect(true) && alert('Registration successful !')
+            : setLoader(false) && setUserExist(true)  
         })
         setFirstName('')
         setLastName('')
         setEmail('')
-        alert('Registration successful !')
-        setRedirect(true)
     }
     if(redirect){
         return <Redirect to='/todo' />
@@ -47,17 +49,25 @@ const SignUp = () => {
                     <p>Create Account</p>
                     <p>to get started now !</p>
                 </div>
-                {userExist && <p>Please register with another email, email already exist !</p>}
-                <div className="firstname">
-                    <input type="text" id="firstname" name="firstname" placeholder="First Name" required className="signup-details" value={firstName} onChange={(e) => setFirstName(e.target.value)}/>
+                {loader ? 
+                <div className='signup-loader'>
+                    <Loader></Loader> 
                 </div>
-                <div className="lastname">
-                    <input type="text" id="lastname" name="lastname" placeholder="Last Name" required className="signup-details" value={lastName} onChange={(e) => setLastName(e.target.value)}/>
-                </div>
+                :
                 <div>
-                    <input type="email" id="email" name="email" placeholder="Email Address" required className="signup-details" value={email} onChange={(e) => setEmail(e.target.value)}/>
+                    {userExist && <p className='error'>Please register with another email, email already exist !</p>}
+                    <div className="firstname">
+                        <input type="text" id="firstname" name="firstname" placeholder="First Name" required className="signup-details" value={firstName} onChange={(e) => setFirstName(e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1))} autoFocus/>
+                    </div>
+                    <div className="lastname">
+                        <input type="text" id="lastname" name="lastname" placeholder="Last Name" required className="signup-details" value={lastName} onChange={(e) => setLastName(e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1))}/>
+                    </div>
+                    <div>
+                        <input type="email" id="email" name="email" placeholder="Email Address" required className="signup-details" value={email} onChange={(e) => setEmail(e.target.value)}/>
+                    </div>
+                    <button className="signup-button">Submit</button>
                 </div>
-                <button className="signup-button">Submit</button>
+                }
                 <p>Already have an account ? <Link to="/">login</Link></p>
             </form>
       </div>
