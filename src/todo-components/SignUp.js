@@ -19,31 +19,33 @@ const SignUp = () => {
         axios
         .get('https://6391a596b750c8d178c8e2e7.mockapi.io/users')
         .then((response) => {
-            ((response.data).filter((user) => (user.email === email))).length === 0 ?
+            ((response.data).find((user) => user.email === email) === undefined) ?
             axios
             .post('https://6391a596b750c8d178c8e2e7.mockapi.io/users', {
                 firstName: firstName,
                 lastName: lastName,
                 email: email
             })
-            .then((response) => {
-                return (response);
-            })
+            .then(() =>{
+                alert('Registered successfully')
+                setRedirect(true)
+            }
+            )
             .catch((error) => {
                 alert(error);
             })
-            && setRedirect(true) && alert('Registration successful !')
             : setLoader(false) && setUserExist(true)  
         })
         .catch((error) => {
             alert(error)
         })
+
         setFirstName('')
         setLastName('')
         setEmail('')
     }
     if(redirect){
-        return <Redirect to='/todo' />
+        return <Redirect to='/' />
     }
     return (
         <div className="container">

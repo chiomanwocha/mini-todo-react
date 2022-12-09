@@ -38,9 +38,6 @@ const LoginTodo = () => {
                 alert(error)
                 setLoader(true)
             })
-            // .finally(() =>{
-            //     setLoader(false)
-            // })
         }
     }
 
