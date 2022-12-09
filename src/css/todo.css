@@ -1,5 +1,4 @@
 .todo-app{
-    /* width: 70vw; */
     margin: 0 auto;
 }
 .greetings{
@@ -27,7 +26,6 @@
     border: 1px solid white;
     border-radius: 10px;
     font-weight: 900;
-    /* color: black */
 }
 #todo-item{
     width: 30vw;
@@ -47,12 +45,10 @@
 .edit-item{
     padding: 5px 2px;
     margin-right: 5px;
-    /* width: 25vw; */
         border-radius: 5px;
         outline: none;
         padding: 0px 10px;
         border: 1px solid;
-        /* margin: 10px; */
         font-size: 16px;
         background-color: #C2BAFD;
         color: white;
@@ -62,7 +58,6 @@
         color: white
     }
 button{
-    /* padding: 5px 15px; */
     margin-right: 5px;
     font-size: 16px;
     background-color: hsl(0, 0%, 100%);
@@ -90,16 +85,11 @@ li{
 li p {
     display: inline-block;
     margin: 0;
-    /* padding: 10px 0; */
 }
-/* .done{
-    text-decoration: line-through;
-} */
 .not-editing{
     display: grid;        
     grid-template-columns: 2vw 13vw 4vw 5vw;
     align-items: center;
-    /* width: 40vw; */
     margin: 0 auto;
     text-align: left;
 }
@@ -117,3 +107,11 @@ li p {
     justify-content: space-between;
     align-items: center;
 }
+.todo-loader{
+    height: 80vh;
+    display: flex;
+    align-items: center;
+}
+/* #editItem{
+    text-transform: capitalize;
+} */

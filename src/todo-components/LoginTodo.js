@@ -10,6 +10,7 @@ const LoginTodo = () => {
     const [blank, setBlank] = useState(false)
     const [redirect, setRedirect] = useState(false)
     const [loader, setLoader] = useState(false)
+    const [userId, setUserId] = useState('')
 
     const checkUser = (e) => { 
         e.preventDefault();
@@ -18,13 +19,15 @@ const LoginTodo = () => {
         if(userEmail.length === 0){
             setBlank(true) 
         } else{
-            setLoader(true)
+            // setLoader(true)
             axios
             .get('https://6391a596b750c8d178c8e2e7.mockapi.io/users')
             .then((response) => {
                 if((response.data).filter((user) => user.email === userEmail).length > 0){
                     setExist(true)
                     setRedirect(true)
+                    const currentUser = ((response.data).filter((user) => user.email === userEmail))
+                    setUserId(currentUser[0].id)
                 } else {
                     setLoader(false)
                     setUserEmail('')
@@ -32,8 +35,12 @@ const LoginTodo = () => {
                 }
             })
             .catch((error) => {
-                console.log(error)
+                alert(error)
+                setLoader(true)
             })
+            // .finally(() =>{
+            //     setLoader(false)
+            // })
         }
     }
 
@@ -42,7 +49,7 @@ const LoginTodo = () => {
     }, [])
 
     if(redirect){
-        return <Redirect to='/todo' />
+        return <Redirect to={`/${userId}`} />
     }
 
     return ( 

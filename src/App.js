@@ -16,7 +16,7 @@ function App() {
           <Route path="/signup">
             <SignUp></SignUp>
           </Route> 
-          <Route path="/todo">
+          <Route path="/:id">
             <TodoApp></TodoApp>
           </Route> 
         </Switch>

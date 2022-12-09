@@ -35,6 +35,9 @@ const SignUp = () => {
             && setRedirect(true) && alert('Registration successful !')
             : setLoader(false) && setUserExist(true)  
         })
+        .catch((error) => {
+            alert(error)
+        })
         setFirstName('')
         setLastName('')
         setEmail('')
