@@ -20,6 +20,9 @@ const SignUp = () => {
         onSuccess: (data) => {
             alert(data.data.message)
             setRedirect(true)
+            setFirstName('')
+            setLastName('')
+            setEmail('')
         }
     })
 
@@ -31,9 +34,6 @@ const SignUp = () => {
             email: email
         }
         register(details)
-        setFirstName('')
-        setLastName('')
-        setEmail('')
     }
 
     if(redirect){
