@@ -1,15 +1,33 @@
 import '../css/todo.css'
 import { Link } from 'react-router-dom'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import axios from 'axios'
 import Loader from './Loader'
+import { useQuery } from 'react-query'
+
+function getCookie(name) {
+    var cookieArr = document.cookie.split(";");
+    for(var i = 0; i < cookieArr.length; i++) {
+        var cookiePair = cookieArr[i].split("=");
+        if(name === cookiePair[0].trim()) {
+            return decodeURIComponent(cookiePair[1]);
+        }
+    }
+    return null;
+}
 
 const TodoApp = () => {
     const params = useParams()
-    const [user, setUser] = useState('')
+    const [user, setUser] = useState(() => {
+        const user = getCookie(`"username`);
+        if(user){
+            return (user).replace(`"`,'')
+        } else {
+            return ''
+        }
+    })
     const [todoItem, setTodoItem] = useState('')
-    const [loader, setLoader] = useState(false)
     const [todoList, setTodoList] = useState([])
     const [doingList, setDoingList] = useState([])
     const [doneList, setDoneList] = useState(() => {
@@ -23,10 +41,15 @@ const TodoApp = () => {
     const newTodoList = [...todoList]
     const [newTodoItem, setNewTodoItem] = useState('')
 
+    const {status, data} = useQuery('todo', () => {
+        return axios.get(`https://todo-api-12iv.onrender.com/todo/{params.id}`)
+    })
+    // console.log(data?.data)
     const addTodo = (e) => {
         e.preventDefault();
         (todoItem.trim() !== '') &&
             axios
+            .post(`https://todo-api-12iv.onrender.com/todo`)
             .post(`https://6391a596b750c8d178c8e2e7.mockapi.io/users/${params.id}/todo`,{
                     id: Math.floor(Math.random() * 100),
                     text: todoItem,
@@ -177,103 +200,104 @@ const TodoApp = () => {
             todo: !todo.todo
         })
     }
-    
-    
-    useEffect(() => {  
-        setLoader(true)
-        const getUser = axios.get(`https://6391a596b750c8d178c8e2e7.mockapi.io/users/${params.id}`)
-        const getTodo = axios.get(`https://6391a596b750c8d178c8e2e7.mockapi.io/users/${params.id}/todo`)
-        const getDoing = axios.get(`https://6391a596b750c8d178c8e2e7.mockapi.io/users/${params.id}/doing`)
 
-        axios.all([getUser, getTodo, getDoing])
-        .then(axios.spread((...responses) => {
-            const user = responses[0]
-            setUser(user.data.firstName)
-            const todo = responses[1]
-            setTodoList(todo.data)
-            const doing = responses[2]
-            setDoingList(doing.data)
-            setLoader(false)
-        }
-        ))
-        .catch((error) => {
-            alert(error)
-        })
-    }, [])
+    // useEffect(() => {  
+    //     setLoader(true)
+    //     const getUser = axios.get(`https://6391a596b750c8d178c8e2e7.mockapi.io/users/${params.id}`)
+    //     const getTodo = axios.get(`https://6391a596b750c8d178c8e2e7.mockapi.io/users/${params.id}/todo`)
+    //     const getDoing = axios.get(`https://6391a596b750c8d178c8e2e7.mockapi.io/users/${params.id}/doing`)
+
+    //     axios.all([getUser, getTodo, getDoing])
+    //     .then(axios.spread((...responses) => {
+    //         const user = responses[0]
+    //         setUser(user.data.firstName)
+    //         const todo = responses[1]
+    //         setTodoList(todo.data)
+    //         const doing = responses[2]
+    //         setDoingList(doing.data)
+    //         setLoader(false)
+    //     }
+    //     ))
+    //     .catch((error) => {
+    //         alert(error)
+    //     })
+    // }, [])
 
     localStorage.setItem('doneList', JSON.stringify(doneList))
 
     return (  
         <div>
-            {loader? 
-            <div className='todo-loader'>
-                <Loader></Loader>
-            </div>:
-            <div className="todo-app">
-                <div className="greetings">
-                    <p >hi, {user} !</p>
-                    <Link to="/"><button>logout</button></Link>
+            {/* {status === 'loading' && 
+                <div className='todo-loader'>
+                    <Loader></Loader>
                 </div>
-                <h1>todos</h1>
-                <form onSubmit={(e) => addTodo(e)}>
-                    <input type="text" name="todo-item" id="todo-item" placeholder="What do you need to do ?" required className="details"  value={todoItem} onChange={(e) => setTodoItem(e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1))} autoFocus/>
-                    <button className="add-todo">add</button>
-                </form>
-                <div className="todo-list">
-                    <div className="todo">
-                        <h2>todo</h2>
-                        {todoList.map((todo, index) => (
-                            <ul key={todo.id}>
-                                {!todo.isEditing ?
-                                    <li className="not-editing">
-                                        <input type="checkbox" name="done" id="done" onClick={() => [addDoing(todo)]}/>
-                                        <p>{todo.text}</p>
-                                        <button onClick={() => editItem(index)}> Edit
-                                        </button>
-                                        <button onClick={() => deleteTodo(index, todo)}>Delete</button>
-                                    </li>
-                                    :
-                                    <li className="editing">
-                                        <form onSubmit={(e) => save(e, index, todo)}>
-                                            <input type="text" name="editItem" id="editItem" className="edit-item" defaultValue={todoList[index].text}  onChange={(e) => setNewTodoItem(e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1))} autoFocus />
-                                                <button type='submit'>Save</button>
-                                            </form>
-                                    </li>
-                                }
-                            </ul>
-                            )
-                        )}
+            } */}
+            {/* { status !== 'loading' && 
+                <div className="todo-app"> 
+                    <div className="greetings">
+                        <p >hi, {user}!</p>
+                        <Link to="/"><button>logout</button></Link>
                     </div>
-                    <div className="doing">
-                        <h2>doing</h2>
-                            {doingList.map((todo, index) => (
-                                    <ul key={todo.id}>
-                                        <li className="doing-box" key={todo.id}>
+                    <h1>todos</h1>
+                    <form onSubmit={(e) => addTodo(e)}>
+                        <input type="text" name="todo-item" id="todo-item" placeholder="What do you need to do ?" required className="details"  value={todoItem} onChange={(e) => setTodoItem(e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1))} autoFocus/>
+                        <button className="add-todo">add</button>
+                    </form>
+                    <div className="todo-list">
+                        <div className="todo">
+                            <h2>todo</h2>
+                            {todoList.map((todo, index) => (
+                                <ul key={todo.id}>
+                                    {!todo.isEditing ?
+                                        <li className="not-editing">
+                                            <input type="checkbox" name="done" id="done" onClick={() => [addDoing(todo)]}/>
                                             <p>{todo.text}</p>
-                                            <div>
-                                                <button onClick={() => [revertDoing(index, todo)]}>Undo</button>
-                                                <button onClick={() => [addDone(index, todo)]}>Done</button>
-                                            </div>
+                                            <button onClick={() => editItem(index)}> Edit
+                                            </button>
+                                            <button onClick={() => deleteTodo(index, todo)}>Delete</button>
+                                        </li>
+                                        :
+                                        <li className="editing">
+                                            <form onSubmit={(e) => save(e, index, todo)}>
+                                                <input type="text" name="editItem" id="editItem" className="edit-item" defaultValue={todoList[index].text}  onChange={(e) => setNewTodoItem(e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1))} autoFocus />
+                                                    <button type='submit'>Save</button>
+                                                </form>
+                                        </li>
+                                    }
+                                </ul>
+                                )
+                            )}
+                        </div>
+                        <div className="doing">
+                            <h2>doing</h2>
+                                {doingList.map((todo, index) => (
+                                        <ul key={todo.id}>
+                                            <li className="doing-box" key={todo.id}>
+                                                <p>{todo.text}</p>
+                                                <div>
+                                                    <button onClick={() => [revertDoing(index, todo)]}>Undo</button>
+                                                    <button onClick={() => [addDone(index, todo)]}>Done</button>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    )
+                                )}
+                        </div>
+                        <div className="todo-done">
+                            <h2>done</h2>
+                            {doneList.map((todo, index) => (
+                                    <ul key={todo.id}>
+                                        <li>
+                                            <input type="checkbox" name="done" id="done" checked={todo.done} onChange={() => [revertDone(index, todo), updateDoneArray(todo)]}/>
+                                            <p>{todo.text}</p>
                                         </li>
                                     </ul>
                                 )
                             )}
+                        </div> 
                     </div>
-                    <div className="todo-done">
-                        <h2>done</h2>
-                        {doneList.map((todo, index) => (
-                                <ul key={todo.id}>
-                                    <li>
-                                        <input type="checkbox" name="done" id="done" checked={todo.done} onChange={() => [revertDone(index, todo), updateDoneArray(todo)]}/>
-                                        <p>{todo.text}</p>
-                                    </li>
-                                </ul>
-                            )
-                        )}
-                    </div> 
                 </div>
-            </div>
-            }
+            } */}
         </div>
     );
 }

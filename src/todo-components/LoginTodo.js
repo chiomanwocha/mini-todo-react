@@ -5,22 +5,43 @@ import axios from 'axios'
 import Loader from './Loader'
 import { useMutation } from 'react-query'
 
+function getCookie(name) {
+    var cookieArr = document.cookie.split(";");
+    for(var i = 0; i < cookieArr.length; i++) {
+        var cookiePair = cookieArr[i].split("=");
+        if(name === cookiePair[0].trim()) {
+            return decodeURIComponent(cookiePair[1]);
+        }
+    }
+    return null;
+}
 const LoginTodo = () => {
-    const [userEmail, setUserEmail] = useState('')
-    const [id, setId] = useState(null)
+    const [token, setToken] = useState(null)
+    const [messageError, setMessageError] = useState('')
     const [redirect, setRedirect] = useState(false)
+    const [userEmail, setUserEmail] = useState(() => {
+        const email = getCookie(`"email`);
+        if(email){
+            return (email).replace(`"`,'')
+        } else {
+            return ''
+        }
+    })
 
     const auth = (email) => {
         return axios.post('https://todo-api-12iv.onrender.com/users/login', email)
     }
 
     const {mutate, status, error} = useMutation(auth, {
+        onError: (data) => {
+            setMessageError(data.response.data.message)
+        },
         onSuccess: (data) => {
-            setId(data.data.data.id)
+            document.cookie = `"username=${data.data.data.firstname}"`;
+            setToken(data.data.data.token)
             setRedirect(true)
         }
     })
-
     const login = (e) => {
         e.preventDefault();
         const email = {
@@ -28,9 +49,9 @@ const LoginTodo = () => {
         }
         mutate(email)
     }
-
+    
     if(redirect){
-        return <Redirect to={`/${id}`} />
+        return <Redirect to={`/${token}`} />
     }
 
     return ( 
@@ -44,7 +65,7 @@ const LoginTodo = () => {
                     <Loader />
                 </div>
             }
-            {status === 'error' && <p className='error'>{error.message}</p>}
+            {status === 'error' && <p className='error'>{messageError}</p>}
             {status !== 'loading' &&
                 <div>
                     <form onSubmit={(e) => login(e)}>

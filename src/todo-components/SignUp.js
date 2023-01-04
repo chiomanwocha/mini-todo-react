@@ -18,18 +18,20 @@ const SignUp = () => {
     const { mutate: register, status, error} = useMutation(registerUser,
     {
         onSuccess: (data) => {
+            var date = new Date();
+            date.setTime(date.getTime()+(30*1000));
+            var expiry = '; expires=' + date.toUTCString();
+            document.cookie = `"email=${data.data.data[0].email}"`+expiry+'; path=/';
             alert(data.data.message)
             setRedirect(true)
-            setFirstName('')
-            setLastName('')
-            setEmail('')
         }
-    })
+    }
+    )
 
     const createAccount = (e) =>{
         e.preventDefault();
         const details = {
-            fisrtname : firstName,
+            firstname: firstName,
             lastname: lastName,
             email: email
         }
@@ -37,7 +39,7 @@ const SignUp = () => {
     }
 
     if(redirect){
-       return <Redirect to='/' />
+        return <Redirect to={`/`} />
     }
 
     return (
@@ -54,7 +56,7 @@ const SignUp = () => {
                 }
                 {status !== 'loading' &&
                     <div>
-                        {status === 'error' && <p className='error'>{error.message}</p>}
+                        {status === 'error' && <p className='error'>{error.response.data.message}</p>}
                         <div className="firstname">
                             <input type="text" id="firstname" name="firstname" placeholder="First Name" required className="signup-details" value={firstName} onChange={(e) => setFirstName(e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1))} autoFocus/>
                         </div>
