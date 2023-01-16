@@ -34,3 +34,12 @@
     align-items: center;
     display: flex;
 }
+
+@media screen and (max-width: 620px) {
+    .container{
+        width: 90vw;
+    }
+    .signup-details{
+        width: 50vw
+    }
+}

@@ -58,3 +58,9 @@ button:hover{
     align-items: center;
     display: flex;
 }
+
+@media screen and (max-width: 620px) {
+    .details{
+        width: 50vw
+    }
+}

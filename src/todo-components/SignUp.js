@@ -53,7 +53,7 @@ const SignUp = () => {
                     </div>
                 }
                 {status !== 'loading' &&
-                    <div>
+                    <div className="form-inputs">
                         {status === 'error' && <p className='error'>{error.response.data.message}</p>}
                         <div className="firstname">
                             <input type="text" id="firstname" name="firstname" placeholder="First Name" required className="signup-details" value={firstName} onChange={(e) => setFirstName(e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1))} autoFocus/>

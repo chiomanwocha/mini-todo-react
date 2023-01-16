@@ -115,3 +115,19 @@ li p {
 /* #editItem{
     text-transform: capitalize;
 } */
+@media screen and (max-width: 900px) {
+    .todo-list{
+        display: grid;
+        grid-template-columns: 100%
+    }
+    #todo-item{
+        width: 50vw
+    }
+    .not-editing {
+        grid-template-columns: 6vw 29vw 15vw 18vw;
+    }
+    .doing-box, .done-box{
+        width: 60vw;
+        margin: 0 auto;
+    }
+}

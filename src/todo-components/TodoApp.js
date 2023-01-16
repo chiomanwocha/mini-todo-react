@@ -270,7 +270,7 @@ const TodoApp = () => {
                         <h2>done</h2>
                         {doneList.map((todo, index) => (
                                 <ul key={todo.id}>
-                                     <li>
+                                     <li className="done-box">
                                         <input type="checkbox" name="done" id="done" checked={todo.done} onChange={() => [revertDone(index, todo), updateDoneArray(todo)]}/>
                                         <p>{todo.text}</p>
                                         </li>
