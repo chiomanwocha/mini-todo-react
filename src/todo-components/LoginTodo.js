@@ -4,29 +4,13 @@ import { useState } from 'react'
 import axios from 'axios'
 import Loader from './Loader'
 import { useMutation } from 'react-query'
+import Cookies from 'js-cookie'
 
-function getCookie(name) {
-    var cookieArr = document.cookie.split(";");
-    for(var i = 0; i < cookieArr.length; i++) {
-        var cookiePair = cookieArr[i].split("=");
-        if(name === cookiePair[0].trim()) {
-            return decodeURIComponent(cookiePair[1]);
-        }
-    }
-    return null;
-}
 const LoginTodo = () => {
-    const [token, setToken] = useState(null)
+    const [id, setUserId] = useState(null)
     const [messageError, setMessageError] = useState('')
     const [redirect, setRedirect] = useState(false)
-    const [userEmail, setUserEmail] = useState(() => {
-        const email = getCookie(`"email`);
-        if(email){
-            return (email).replace(`"`,'')
-        } else {
-            return ''
-        }
-    })
+    const [userEmail, setUserEmail] = useState(Cookies.get('email') || '');
 
     const auth = (email) => {
         return axios.post('https://todo-api-12iv.onrender.com/users/login', email)
@@ -37,10 +21,11 @@ const LoginTodo = () => {
             setMessageError(data.response.data.message)
         },
         onSuccess: (data) => {
-            document.cookie = `"username=${data.data.data.firstname}"`;
-            setToken(data.data.data.token)
+            Cookies.set("username", data.data.data.firstname, {expires: 1})
+            Cookies.set("token", data.data.data.token, {expires: 1})
+            setUserId(data.data.data.id)
             setRedirect(true)
-        }
+        },
     })
     const login = (e) => {
         e.preventDefault();
@@ -51,7 +36,7 @@ const LoginTodo = () => {
     }
     
     if(redirect){
-        return <Redirect to={`/${token}`} />
+        return <Redirect to={`/${id}`} />
     }
 
     return ( 

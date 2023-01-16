@@ -4,6 +4,7 @@ import '../css/signup.css'
 import axios from 'axios'
 import Loader from './Loader'
 import { useMutation } from 'react-query'
+import Cookies from 'js-cookie'
 
 const SignUp = () => {
     const [firstName, setFirstName] = useState('')
@@ -18,10 +19,7 @@ const SignUp = () => {
     const { mutate: register, status, error} = useMutation(registerUser,
     {
         onSuccess: (data) => {
-            var date = new Date();
-            date.setTime(date.getTime()+(30*1000));
-            var expiry = '; expires=' + date.toUTCString();
-            document.cookie = `"email=${data.data.data[0].email}"`+expiry+'; path=/';
+            Cookies.set("email", data.data.data[0].email)
             alert(data.data.message)
             setRedirect(true)
         }
