@@ -1,45 +1,31 @@
 import '../css/todo.css'
 import { Link } from 'react-router-dom'
 import { useState } from 'react'
-import { useParams } from 'react-router-dom'
-import axios from 'axios'
 import Loader from './Loader'
-import { useQuery, useMutation } from 'react-query'
+import { useQuery, useMutation, useQueryClient } from 'react-query'
 import Cookies from 'js-cookie'
 import apiInstance from '../service/apiInstance'
 
 const TodoApp = () => {
-    const params = useParams()
+    const queryClient = useQueryClient();
     const [user, setUser] = useState(Cookies.get("username"))
-    const [todoItem, setTodoItem] = useState('')
-    const [todoList, setTodoList] = useState([])
-    const [doingList, setDoingList] = useState([])
-    const [doneList, setDoneList] = useState(() => {
-        const savedDone = localStorage.getItem("doneList");
-        if (savedDone) {
-          return JSON.parse(savedDone);
-        } else {
-          return [];
-        }
-      })
+    const [alert, setAlert] = useState('')
+    const [id, setId] = useState(null)
     const [newTodoItem, setNewTodoItem] = useState('');
-    const newTodoList = [...todoList]
+    const [todoItem, setTodoItem] = useState('')
+    const [updating, setUpdating] = useState(false)
 
-    const {status} = useQuery('todo', () => {
+    const {status, data} = useQuery(['get_todo'], () => {
         return apiInstance.get('todo') 
-    }, {
-        onSuccess: data => {
-            setTodoList(data.data.data)
-        }
     })
 
     const add = (todo) => {
         return apiInstance.post('todo', todo)
     }
 
-    const {mutate: addItem, error} = useMutation(add, {
-        onSuccess: (data) => {
-            alert(data.data.message)
+    const {mutate: addItem, error, isLoading} = useMutation(add, {
+        onSuccess: () => {
+            queryClient.invalidateQueries('get_todo');
         }
     })
 
@@ -51,170 +37,85 @@ const TodoApp = () => {
             }
             addItem(item)
         }
-        setTodoList([...todoList, {
-            id: Math.floor(Math.random() * 100),
-            title: todoItem,
-            done: false,
-            doing: false,  
-            todo: true,
-            isEditing: false
-        }])
         setTodoItem('')
     }
-    const edit = (id) => {
-        return apiInstance.patch('todo', id)
+
+    const edit = (item) => {
+        return apiInstance.patch(`todo/${id}`, item)
     }
 
-    const {mutate: saveItem, error: saveError} = useMutation(edit, {
+    const {mutate: saveItem, error: saveError, isLoading: savingItem} = useMutation(edit, {
+        onSuccess: () => {
+            queryClient.invalidateQueries('get_todo');
+            setId(null);
+        }
+    });
+
+    const saveTodo = (e) => {
+        e.preventDefault();
+        saveItem({ title: newTodoItem });
+    }
+
+    const deleteItem = (id) => {
+        return apiInstance.delete(`todo/${id}`)
+    }
+
+    const {mutate: deleteTodo, error: deleteError, isLoading: isDeleting} = useMutation(deleteItem, {
         onSuccess: (data) => {
-            console.log(data)
+            queryClient.invalidateQueries('get_todo');
+            setAlert(data.data.message);
         }
     })
-    
-    const editItem = (index) => {
-        newTodoList[index].isEditing = true
-        setTodoList(newTodoList)
-        console.log('before', todoList)
-    }
 
-    const save = (e, index, todo) => {
-        e.preventDefault();
-        newTodoList[index].isEditing = false
-        if(newTodoItem.length !== 0){
-            newTodoList[index].title = newTodoItem 
-            const item = {
-                title: newTodoItem
-            }
-            saveItem(item)
-            setTodoList(newTodoList)
-            // axios.put(`https://6391a596b750c8d178c8e2e7.mockapi.io/users/${params.id}/todo/${todo.id}`, {
-            //     text: newTodoItem
-            // })
-            // .catch((error) => {
-            //     alert(error)
-            // })
-            setNewTodoItem('')
-        } else {
-            setTodoList(newTodoList)
+    const deleteTodoItem = (id) => {
+        deleteTodo(id);
+    };
+
+    const addDoing = (id) => {
+        const isDoing = { status: 'doing' };
+        setUpdating(true);
+        try {
+            apiInstance.patch(`todo/${id}`, isDoing)
+            .then((res) => { queryClient.invalidateQueries('get_todo'); return res})
+            .finally((res) => {setUpdating(false); return res})
+            .catch((err) => console.log(err))
+        } catch (error) {
+            console.log(error);
         }
     }
 
-    const deleteTodo = (index, todo) => {
-        newTodoList.splice(index, 1)
-        setTodoList(newTodoList)
-        axios.delete(`https://6391a596b750c8d178c8e2e7.mockapi.io/users/${params.id}/todo/${todo.id}`)
-        .catch((error) => {
-            alert(error)
-        })
+    const addDone = (id) => {
+        const isDone = { status: "done" };
+        setUpdating(true);
+        try {
+            apiInstance.patch(`todo/${id}`, isDone)
+            .then((res) => { queryClient.invalidateQueries('get_todo'); return res})
+            .finally((res) => {setUpdating(false); return res})
+            .catch((err) => console.log(err))
+        } catch (error) {
+            console.log(error);
+        }
     }
-
-    const addDoing = (todo) => {
-        setTodoList(
-            todoList.filter((item) => item.id !== todo.id)
-        )
-        setDoingList([...doingList,{
-            id: todo.id,
-            text: todo.title,
-            done: false,
-            doing: !todo.doing,
-            todo: !todo.todo
-        }])
-        const addDoing = axios.post(`https://6391a596b750c8d178c8e2e7.mockapi.io/users/${params.id}/doing`,{
-            id: Math.floor(Math.random() * 100),
-            text: todo.text,
-            done: false,
-            doing: !todo.doing,
-            todo: !todo.todo
-        })
-        const deleteTodo = axios.delete(`https://6391a596b750c8d178c8e2e7.mockapi.io/users/${params.id}/todo/${todo.id}`)
-        axios.all([addDoing, deleteTodo])
-        .then((axios.spread((...response) => {
-            return(response[0] && response[1])
-        })))
-        .catch((error) => {
-            alert(error)
-        })
+    const revertDoing = (id) => {
+            const isTodo = { status: 'todo' };
+            setUpdating(true);
+            try {
+                apiInstance.patch(`todo/${id}`, isTodo)
+                .then((res) => { queryClient.invalidateQueries('get_todo'); return res})
+                .finally((res) => {setUpdating(false); return res})
+                .catch((err) => console.log(err))
+            } catch (error) {
+                console.log(error);
+            }
     }
-    const addDone = (id, todo) => {
-        setDoneList([...doneList, {
-                id: doingList[id].id,
-                text: doingList[id].text,
-                done: true,
-                doing: !doingList[id].doing,
-                todo: false
-        }])
-        setDoingList(
-            doingList.filter((todoItem) => todoItem.id !== todo.id)
-        )
-        axios
-        .delete(`https://6391a596b750c8d178c8e2e7.mockapi.io/users/${params.id}/doing/${todo.id}`)
-        .catch((error) => {
-            alert(error)
-        })
-    }
-    const updateDoneArray = ({id}) => {
-        setDoneList(
-            doneList.filter(todoItem => todoItem.id !== id)
-        )
-    }
-    const revertDoing = (id,todo) => {
-        axios
-            .post(`https://6391a596b750c8d178c8e2e7.mockapi.io/users/${params.id}/todo`,{
-                    id: todo.id,
-                    text: doingList[id].text,
-                    done: false,
-                    doing: !doingList[id].doing,
-                    todo: !doingList[id].todo
-                })
-            .catch((error) => {
-                alert(error)
-            })
-        axios
-            .delete(`https://6391a596b750c8d178c8e2e7.mockapi.io/users/${params.id}/doing/${todo.id}`)
-            .catch((error) => {
-                alert(error)
-            })
-        setTodoList(
-            [...todoList,{
-                id: doingList[id].id,
-                text: doingList[id].text,
-                done: false,
-                doing: !doingList[id].doing,
-                todo: !doingList[id].todo
-            }]
-        )
-        setDoingList(
-            doingList.filter((todoItem) => todoItem.id !== todo.id)
-        )
-    }
-    const revertDone = (id, todo) => {
-        setDoingList([...doingList, {
-            id: doneList[id].id,
-            text: doneList[id].text,
-            done: false,
-            doing: !doneList[id].doing,
-            todo: !doneList[id].todo
-        }]
-        )
-        axios.post(`https://6391a596b750c8d178c8e2e7.mockapi.io/users/${params.id}/doing`,{
-            id: Math.floor(Math.random() * 100),
-            text: todo.text,
-            done: false,
-            doing: !todo.doing,
-            todo: !todo.todo
-        })
-    }
-
-    localStorage.setItem('doneList', JSON.stringify(doneList))
 
     return (  
         <div>
-            {status === 'loading' && 
+            {status === 'loading' ?
                 <div className='todo-loader'>
-                    <Loader></Loader>
+                    <Loader className='todo-loader'></Loader>
                 </div>
-            }
-            { status !== 'loading' && 
+            :
             <div className="todo-app">
                 <div className="greetings">
                     <p >hi, {user} !</p>
@@ -225,41 +126,50 @@ const TodoApp = () => {
                     <input type="text" name="todo-item" id="todo-item" placeholder="What do you need to do ?" required className="details"  value={todoItem} onChange={(e) => setTodoItem(e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1))} autoFocus/>
                     <button className="add-todo">add</button>
                 </form>
-                {error && <p className='error'>{error?.response.data.message}</p>}
+                {(isLoading || updating) && <p style={{ margin: '10px 0' }}>Updating todos...</p>}
+                {isDeleting ? 
+                    <p className='alert'>Deleting... kindly hold on</p>
+                    : null
+                }
                 <div className="todo-list">
                     <div className="todo">
                         <h2>todo</h2>
-                        {todoList.map((todo, index) => (
-                            <ul key={todo.id}>
-                                {!todo.isEditing ?
-                                        <li className="not-editing">
-                                            <input type="checkbox" name="done" id="done" onClick={() => [addDoing(todo)]}/>
-                                            <p>{todo.title}</p>
-                                            <button onClick={() => editItem(index)}> Edit
-                                            </button>
-                                            <button onClick={() => deleteTodo(index, todo)}>Delete</button>
-                                        </li>
-                                        :
-                                    <li className="editing">
-                                        <form onSubmit={(e) => save(e, index, todo)}>
-                                            <input type="text" name="editItem" id="editItem" className="edit-item" defaultValue={todoList[index].title}  onChange={(e) => setNewTodoItem(e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1))} autoFocus />
-                                                <button type='submit'>Save</button>
-                                            </form>
-                                    </li>
-                                }
-                            </ul>
-                            )
-                        )}
+                        <>
+                            {saveError && <p className='error'>{saveError?.response.data.message}</p>}
+                            {data?.data?.data?.filter((data) => data.status === "todo").map((todo) => (
+                                <ul key={todo?.id}>
+                                            <li className="not-editing">
+                                                {id !== todo.id ? 
+                                                <div className='not-editing'>
+                                                    <input type="checkbox" name="done" id="done" onClick={() => addDoing(todo.id)}/>
+                                                    <p>{todo.title}</p> 
+                                                    <button onClick={() => setId(todo.id)}> Edit
+                                                    </button>
+                                                    <button onClick={() => deleteTodoItem(todo.id)}>Delete</button>
+                                                </div>
+                                                :
+                                                       <form onSubmit={saveTodo} className="editing">
+                                                       <input type="text" name="editItem" id="editItem" defaultValue={todo?.title} className="edit-item" onChange={(e) => setNewTodoItem(e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1))} autoFocus />
+                                                           <button type='submit'>
+                                                            {savingItem ? 'Saving...' : 'Save'}
+                                                           </button>
+                                                       </form>
+                                                }
+                                            </li>
+                                </ul>
+                                )
+                            )}
+                        </>
                     </div>
                     <div className="doing">
                         <h2>doing</h2>
-                            {doingList.map((todo, index) => (
+                            {data?.data?.data?.filter((data) => data.status === "doing").map((todo) => (
                                     <ul key={todo.id}>
                                         <li className="doing-box" key={todo.id}>
-                                            <p>{todo.text}</p>
+                                            <p>{todo.title}</p>
                                             <div>
-                                                <button onClick={() => [revertDoing(index, todo)]}>Undo</button>
-                                                <button onClick={() => [addDone(index, todo)]}>Done</button>
+                                                <button onClick={() => revertDoing(todo.id)}>Undo</button>
+                                                <button onClick={() => addDone(todo.id)}>Done</button>
                                             </div>
                                         </li>
                                     </ul>
@@ -268,11 +178,11 @@ const TodoApp = () => {
                     </div>
                     <div className="todo-done">
                         <h2>done</h2>
-                        {doneList.map((todo, index) => (
+                        {data?.data?.data?.filter((data) => data.status === "done").map((todo) => (
                                 <ul key={todo.id}>
                                      <li className="done-box">
-                                        <input type="checkbox" name="done" id="done" checked={todo.done} onChange={() => [revertDone(index, todo), updateDoneArray(todo)]}/>
-                                        <p>{todo.text}</p>
+                                        <input type="checkbox" name="done" id="done" checked={todo.status === "done"} onChange={() => addDoing(todo.id)}/>
+                                        <p>{todo.title}</p>
                                         </li>
                                 </ul>
                             )

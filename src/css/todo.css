@@ -130,4 +130,7 @@ li p {
         width: 60vw;
         margin: 0 auto;
     }
+    .editing {
+        grid-template-columns: 55vw 12vw;
+    }
 }

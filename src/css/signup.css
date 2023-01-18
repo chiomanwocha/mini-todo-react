@@ -28,6 +28,10 @@
     color: red;
     font-weight: 900;
 }
+.alert{
+    color: rgb(25, 108, 0);
+    font-weight: 900;
+}
 
 .signup-loader{
     height: 250px;

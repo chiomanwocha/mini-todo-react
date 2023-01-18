@@ -3,7 +3,7 @@
   color: whitesmoke;
   background: rgb(201,160,255);
   background: linear-gradient(180deg, rgba(201,160,255,1) 0%, rgba(142,173,255,1) 100%);
-  /* height: 100vh */
+  height: 100vh
 }
 /* h1{
   margin: 0
