@@ -58,7 +58,7 @@
         color: white
     }
 button{
-    margin-right: 5px;
+    /* margin-right: 5px; */
     font-size: 16px;
     background-color: hsl(0, 0%, 100%);
     border: none;
@@ -66,6 +66,7 @@ button{
     border-radius: 4px;
     font-weight: 900;
     box-shadow: rgb(202, 202, 202) 0px 0px 10px;
+    padding-left: 10px;
 }
 button:hover{
     background-color: hsl(0, 0%, 95%);
@@ -88,7 +89,7 @@ li p {
 }
 .not-editing{
     display: grid;        
-    grid-template-columns: 2vw 13vw 4vw 5vw;
+    grid-template-columns: 2vw 13vw 9vw;
     align-items: center;
     margin: 0 auto;
     text-align: left;
@@ -112,25 +113,67 @@ li p {
     display: flex;
     align-items: center;
 }
+.todo-buttons, .doing-button{
+    display: flex;
+    gap: 10px
+}
 /* #editItem{
     text-transform: capitalize;
 } */
-@media screen and (max-width: 900px) {
+@media screen and (max-width: 1025px) {
     .todo-list{
         display: grid;
-        grid-template-columns: 100%
+        grid-template-columns: 100%;
+        width: 70vw;
     }
     #todo-item{
         width: 50vw
     }
     .not-editing {
-        grid-template-columns: 6vw 29vw 15vw 18vw;
+        grid-template-columns: 6vw 29vw 12vw;
     }
     .doing-box, .done-box{
+        display: grid;
+        grid-template-columns: 33vw 12vw 15vw;
         width: 60vw;
         margin: 0 auto;
     }
     .editing {
         grid-template-columns: 55vw 12vw;
+    }
+    .todo-buttons, .doing-button{
+        display: grid;
+        grid-template-columns: 15vw 17vw;
+    }
+}
+
+@media screen and (max-width: 500px) {
+    .not-editing {
+        grid-template-columns: 12vw 40vw;
+    }
+    .todo-buttons, .doing-button{
+        margin: 10px 15px;
+        gap: 10px
+    }
+    .doing-box{
+        display: grid;
+        grid-template-columns: 60vw;
+        width: 60vw;
+        margin: 0 auto;
+    }
+    .doing-box > p{
+        margin-left: 10px
+    }
+    .editing {
+        grid-template-columns: 60vw;
+    }
+    .editing > button {
+        width: 20vw;
+        margin: 10px 0;
+    }
+    .done-box{
+        display: grid;
+        grid-template-columns: 6vw 50vw;
+        gap: 10px;
     }
 }

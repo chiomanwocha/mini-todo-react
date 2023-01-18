@@ -23,7 +23,7 @@ const TodoApp = () => {
         return apiInstance.post('todo', todo)
     }
 
-    const {mutate: addItem, error, isLoading} = useMutation(add, {
+    const {mutate: addItem, error:addError, isLoading} = useMutation(add, {
         onSuccess: () => {
             queryClient.invalidateQueries('get_todo');
         }
@@ -126,11 +126,12 @@ const TodoApp = () => {
                     <input type="text" name="todo-item" id="todo-item" placeholder="What do you need to do ?" required className="details"  value={todoItem} onChange={(e) => setTodoItem(e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1))} autoFocus/>
                     <button className="add-todo">add</button>
                 </form>
-                {(isLoading || updating) && <p style={{ margin: '10px 0' }}>Updating todos...</p>}
+                {(isLoading || updating) && <p className='alert'>Updating todos...</p>}
                 {isDeleting ? 
                     <p className='alert'>Deleting... kindly hold on</p>
                     : null
                 }
+                {addError && <p className='error'>{addError?.response.data.message}</p>}
                 <div className="todo-list">
                     <div className="todo">
                         <h2>todo</h2>
@@ -143,9 +144,11 @@ const TodoApp = () => {
                                                 <div className='not-editing'>
                                                     <input type="checkbox" name="done" id="done" onClick={() => addDoing(todo.id)}/>
                                                     <p>{todo.title}</p> 
-                                                    <button onClick={() => setId(todo.id)}> Edit
-                                                    </button>
-                                                    <button onClick={() => deleteTodoItem(todo.id)}>Delete</button>
+                                                    <div className='todo-buttons'>
+                                                        <button onClick={() => setId(todo.id)}> Edit
+                                                        </button>
+                                                        <button onClick={() => deleteTodoItem(todo.id)}>Delete</button>
+                                                    </div>
                                                 </div>
                                                 :
                                                        <form onSubmit={saveTodo} className="editing">
@@ -167,7 +170,7 @@ const TodoApp = () => {
                                     <ul key={todo.id}>
                                         <li className="doing-box" key={todo.id}>
                                             <p>{todo.title}</p>
-                                            <div>
+                                            <div className='doing-button'>
                                                 <button onClick={() => revertDoing(todo.id)}>Undo</button>
                                                 <button onClick={() => addDone(todo.id)}>Done</button>
                                             </div>
