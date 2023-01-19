@@ -5,6 +5,7 @@ import Loader from './Loader'
 import { useQuery, useMutation, useQueryClient } from 'react-query'
 import Cookies from 'js-cookie'
 import apiInstance from '../service/apiInstance'
+import { Icon } from '@iconify/react';
 
 const TodoApp = () => {
     const queryClient = useQueryClient();
@@ -13,7 +14,12 @@ const TodoApp = () => {
     const [id, setId] = useState(null)
     const [newTodoItem, setNewTodoItem] = useState('');
     const [todoItem, setTodoItem] = useState('')
+    const [doingItem, setDoingItem] = useState('')
+    const [doneItem, setDoneItem] = useState('')
     const [updating, setUpdating] = useState(false)
+    const [showCardTodo, setShowCardTodo] = useState(false)
+    const [showCardDoing, setShowCardDoing] = useState(false)
+    const [showCardDone, setShowCardDone] = useState(false)
 
     const {status, data} = useQuery(['get_todo'], () => {
         return apiInstance.get('todo') 
@@ -23,7 +29,7 @@ const TodoApp = () => {
         return apiInstance.post('todo', todo)
     }
 
-    const {mutate: addItem, error:addError, isLoading} = useMutation(add, {
+    const {mutate: addItem, error: todoError, isLoading: todoLoading} = useMutation(add, {
         onSuccess: () => {
             queryClient.invalidateQueries('get_todo');
         }
@@ -38,6 +44,41 @@ const TodoApp = () => {
             addItem(item)
         }
         setTodoItem('')
+    }
+
+    const {mutate: addDoingItem, error:doingError , isLoading: doingLoading} = useMutation(add, {
+        onSuccess: () => {
+            queryClient.invalidateQueries('get_todo');
+        }
+    })
+
+    const doingAdd = (e) => {
+        e.preventDefault();
+        if (doingItem.trim() !== ''){
+            const item = {
+                title: doingItem,
+                status: "doing"
+            }
+            addDoingItem(item)
+        }
+        setDoingItem('')
+    }
+    const {mutate: addDoneItem, error:doneError , isLoading: doneLoading} = useMutation(add, {
+        onSuccess: () => {
+            queryClient.invalidateQueries('get_todo');
+        }
+    })
+
+    const doneAdd = (e) => {
+        e.preventDefault();
+        if (doneItem.trim() !== ''){
+            const item = {
+                title: doneItem,
+                status: "done"
+            }
+            addDoneItem(item)
+        }
+        setDoneItem('')
     }
 
     const edit = (item) => {
@@ -122,24 +163,22 @@ const TodoApp = () => {
                     <Link to="/"><button>logout</button></Link>
                 </div>
                 <h1>todos</h1>
-                <form onSubmit={(e) => addTodo(e)}>
-                    <input type="text" name="todo-item" id="todo-item" placeholder="What do you need to do ?" required className="details"  value={todoItem} onChange={(e) => setTodoItem(e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1))} autoFocus/>
-                    <button className="add-todo">add</button>
-                </form>
-                {(isLoading || updating) && <p className='alert'>Updating todos...</p>}
-                {isDeleting ? 
-                    <p className='alert'>Deleting... kindly hold on</p>
-                    : null
-                }
-                {addError && <p className='error'>{addError?.response.data.message}</p>}
+                {todoError && <p className='error'>{todoError?.response.data.message}</p>}
+                {doingError && <p className='error'>{doingError?.response.data.message}</p>}
+                {(todoLoading || doingLoading || doneLoading || updating) && <p className='alert'>Updating todos...</p>}
+                            {isDeleting ? 
+                                <p className='error'>Deleting... kindly hold on</p>
+                                : null
+                            }
+
                 <div className="todo-list">
-                    <div className="todo">
+                    <div>
                         <h2>todo</h2>
-                        <>
                             {saveError && <p className='error'>{saveError?.response.data.message}</p>}
-                            {data?.data?.data?.filter((data) => data.status === "todo").map((todo) => (
-                                <ul key={todo?.id}>
-                                            <li className="not-editing">
+                        <>
+                            <ul className="todo">
+                                {data?.data?.data?.filter((data) => data.status === "todo").map((todo) => (
+                                            <li className="not-editing" key={todo?.id}>
                                                 {id !== todo.id ? 
                                                 <div className='not-editing'>
                                                     <input type="checkbox" name="done" id="done" onClick={() => addDoing(todo.id)}/>
@@ -154,20 +193,33 @@ const TodoApp = () => {
                                                        <form onSubmit={saveTodo} className="editing">
                                                        <input type="text" name="editItem" id="editItem" defaultValue={todo?.title} className="edit-item" onChange={(e) => setNewTodoItem(e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1))} autoFocus />
                                                            <button type='submit'>
-                                                            {savingItem ? 'Saving...' : 'Save'}
+                                                            {savingItem ? 'Saving..' : 'Save'}
                                                            </button>
                                                        </form>
                                                 }
-                                            </li>
-                                </ul>
+                                </li>
                                 )
-                            )}
+                                )}
+                                </ul>
+                                {showCardTodo ?
+                                    <form onSubmit={(e) => addTodo(e)}>
+                                        <div></div>
+                                        <input type="text" name="todo-item" id="todo-item" placeholder="enter title for this card" required className="details"  value={todoItem} onChange={(e) => setTodoItem(e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1))} autoFocus/>
+                                        <button className='add-card'>add a card</button>
+                                        <button className='close-button' onClick={() => setShowCardTodo(false)} >X</button>
+                                    </form>
+                                :
+                                <div className='add-button' onClick={() => setShowCardTodo(true)}>
+                                    <Icon icon="material-symbols:add" />
+                                    <p>add a card</p>
+                                </div>
+                                }
                         </>
                     </div>
-                    <div className="doing">
+                    <div>
                         <h2>doing</h2>
+                        <ul className="doing">
                             {data?.data?.data?.filter((data) => data.status === "doing").map((todo) => (
-                                    <ul key={todo.id}>
                                         <li className="doing-box" key={todo.id}>
                                             <p>{todo.title}</p>
                                             <div className='doing-button'>
@@ -175,21 +227,45 @@ const TodoApp = () => {
                                                 <button onClick={() => addDone(todo.id)}>Done</button>
                                             </div>
                                         </li>
-                                    </ul>
                                 )
-                            )}
+                                )}
+                        </ul>
+                        {showCardDoing ?
+                                    <form onSubmit={(e) => doingAdd(e)}>
+                                        <input type="text" name="todo-item" id="todo-item" placeholder="enter title for this card" required className="details"  value={doingItem} onChange={(e) => setDoingItem(e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1))} autoFocus/>
+                                        <button className='add-card'>add a card</button>
+                                        <button className='close-button' onClick={() => setShowCardDoing(false)} >X</button>
+                                    </form>
+                                :
+                                <div className='add-button' onClick={() => setShowCardDoing(true)}>
+                                    <Icon icon="material-symbols:add" />
+                                    <p>add a card</p>
+                                </div>
+                                }
                     </div>
-                    <div className="todo-done">
+                    <div>
                         <h2>done</h2>
+                        <ul className="todo-done">
                         {data?.data?.data?.filter((data) => data.status === "done").map((todo) => (
-                                <ul key={todo.id}>
-                                     <li className="done-box">
+                                     <li className="done-box" key={todo.id}>
                                         <input type="checkbox" name="done" id="done" checked={todo.status === "done"} onChange={() => addDoing(todo.id)}/>
                                         <p>{todo.title}</p>
                                         </li>
-                                </ul>
                             )
-                        )}
+                            )}
+                            </ul>
+                            {showCardDone ?
+                                    <form onSubmit={(e) => doneAdd(e)}>
+                                        <input type="text" name="todo-item" id="todo-item" placeholder="enter title for this card" required className="details"  value={doneItem} onChange={(e) => setDoneItem(e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1))} autoFocus/>
+                                        <button className='add-card'>add a card</button>
+                                        <button className='close-button' onClick={() => setShowCardDone(false)} >X</button>
+                                    </form>
+                                :
+                                <div className='add-button' onClick={() => setShowCardDone(true)}>
+                                    <Icon icon="material-symbols:add" />
+                                    <p>add a card</p>
+                                </div>
+                                }
                     </div> 
                 </div>
             </div>

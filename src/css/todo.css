@@ -16,6 +16,7 @@
 .todo-list{
     display: grid;
     grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: auto;
     width: 80vw;
     margin: 0 auto;
 }
@@ -26,17 +27,20 @@
     border: 1px solid white;
     border-radius: 10px;
     font-weight: 900;
+    height: fit-content
 }
 #todo-item{
-    width: 30vw;
+    /* width: 30vw; */
+    width: -webkit-fill-available;
+    display: block;
     margin-right: 5px;
     padding: 5px;
-    width: 25vw;
+    /* width: 25vw; */
         border-radius: 9px;
         outline: none;
         padding: 10px;
         border: 1px solid;
-        margin: 10px;
+        margin: 10px 0;
         font-size: 16px;
         background-color: #C2BAFD;
         color: white;
@@ -66,7 +70,7 @@ button{
     border-radius: 4px;
     font-weight: 900;
     box-shadow: rgb(202, 202, 202) 0px 0px 10px;
-    padding-left: 10px;
+    /* padding-left: 10px; */
 }
 button:hover{
     background-color: hsl(0, 0%, 95%);
@@ -94,20 +98,40 @@ li p {
     margin: 0 auto;
     text-align: left;
 }
+div.not-editing{
+    background-color: rgba(42, 42, 215, 0.1);
+    border-radius: 10px;
+    padding: 10px 0;
+}
+li
+li.not-editing, li.doing-box{
+    margin: 10px 0
+}
+li.done-box{
+    margin: 10px 0;
+    background-color: rgba(42, 42, 215, 0.1);
+    border-radius: 10px;
+    padding: 10px 0;
+    
+}
 .editing{
     display: grid;
     grid-template-columns: 19vw 5vw;
     margin: 0 auto;
 }
 .todo, .doing, .todo-done{
-    max-height: 50vh;
+    max-height: 35vh;
     overflow-y: scroll;
 }
 .doing-box{
     display: flex;
     justify-content: space-between;
     align-items: center;
+    background-color: rgba(42, 42, 215, 0.1);
+    border-radius: 10px;
+    padding: 10px;
 }
+
 .todo-loader{
     height: 80vh;
     display: flex;
@@ -116,6 +140,18 @@ li p {
 .todo-buttons, .doing-button{
     display: flex;
     gap: 10px
+}
+.add-card{
+    margin: 10px 0 15px 0;
+}
+.add-button{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+.close-button{
+    margin-left:10px
 }
 /* #editItem{
     text-transform: capitalize;
