@@ -7,7 +7,6 @@ import { useMutation } from 'react-query'
 import Cookies from 'js-cookie'
 
 const LoginTodo = () => {
-    const [id, setUserId] = useState(null)
     const [messageError, setMessageError] = useState('')
     const [redirect, setRedirect] = useState(false)
     const [userEmail, setUserEmail] = useState(Cookies.get('email') || '');
@@ -16,14 +15,13 @@ const LoginTodo = () => {
         return axios.post('https://todo-api-12iv.onrender.com/users/login', email)
     }
 
-    const {mutate, status, error} = useMutation(auth, {
+    const {mutate, status} = useMutation(auth, {
         onError: (data) => {
             setMessageError(data.response.data.message)
         },
         onSuccess: (data) => {
             Cookies.set("username", data.data.data.firstname, {expires: 1})
             Cookies.set("token", data.data.data.token, {expires: 1})
-            setUserId(data.data.data.id)
             setRedirect(true)
         },
     })
@@ -36,7 +34,7 @@ const LoginTodo = () => {
     }
     
     if(redirect){
-        return <Redirect to={`/${id}`} />
+        return <Redirect to="/todo" />
     }
 
     return ( 
