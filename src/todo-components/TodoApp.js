@@ -39,7 +39,8 @@ const TodoApp = () => {
         e.preventDefault();
         if (todoItem.trim() !== ''){
             const item = {
-                title: todoItem
+                title: todoItem,
+                status: "todo"
             }
             addItem(item)
         }

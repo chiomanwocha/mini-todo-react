@@ -104,7 +104,7 @@ div.not-editing{
     padding: 10px 0;
 }
 li
-li.not-editing, li.doing-box{
+li.not-editing, li.doing-box, li.not-editing{
     margin: 10px 0
 }
 li.done-box{
