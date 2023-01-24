@@ -1,215 +1,215 @@
-.todo-app{
-    margin: 0 auto;
+.todo-app {
+  margin: 0 auto;
+  height: 100vh;
 }
-.greetings{
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    margin-right: 30px;
-    padding-top: 60px
+.greetings {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-right: 30px;
+  padding-top: 60px;
 }
 .greetings > p {
-    font-weight: 900;
-    font-size: 20px;
-    margin-right: 10px;
+  font-weight: 900;
+  font-size: 20px;
+  margin-right: 10px;
 }
-.todo-list{
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: auto;
-    width: 80vw;
-    margin: 0 auto;
+.todo-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: auto;
+  width: 80vw;
+  margin: 0 auto;
 }
-.todo-list > div{
-    background-color: hsla(0, 0%, 100%, .1);
-    margin:10px 20px 0 0;
-    padding: 0 10px;
-    border: 1px solid white;
-    border-radius: 10px;
-    font-weight: 900;
-    height: fit-content
+.todo-list > div {
+  background-color: hsla(0, 0%, 100%, 0.1);
+  margin: 10px 20px 0 0;
+  padding: 0 10px;
+  border: 1px solid white;
+  border-radius: 10px;
+  font-weight: 900;
+  height: fit-content;
 }
-#todo-item{
-    /* width: 30vw; */
-    width: -webkit-fill-available;
-    display: block;
-    margin-right: 5px;
-    padding: 5px;
-    /* width: 25vw; */
-        border-radius: 9px;
-        outline: none;
-        padding: 10px;
-        border: 1px solid;
-        margin: 10px 0;
-        font-size: 16px;
-        background-color: #C2BAFD;
-        color: white;
-        font-weight: 900;
+#todo-item {
+  width: -webkit-fill-available;
+  display: block;
+  margin-right: 5px;
+  padding: 5px;
+  border-radius: 9px;
+  outline: none;
+  padding: 10px;
+  border: 1px solid;
+  margin: 10px 0;
+  font-size: 16px;
+  background-color: #c2bafd;
+  color: white;
+  font-weight: 900;
 }
-.edit-item{
-    padding: 5px 2px;
-    margin-right: 5px;
-        border-radius: 5px;
-        outline: none;
-        padding: 0px 10px;
-        border: 1px solid;
-        font-size: 16px;
-        background-color: #C2BAFD;
-        color: white;
-        font-weight: 900;
+.edit-item {
+  padding: 5px 2px;
+  margin-right: 5px;
+  border-radius: 5px;
+  outline: none;
+  padding: 0px 10px;
+  border: 1px solid;
+  font-size: 16px;
+  background-color: #c2bafd;
+  color: white;
+  font-weight: 900;
 }
-    ::placeholder{
-        color: white
-    }
-button{
-    /* margin-right: 5px; */
-    font-size: 16px;
-    background-color: hsl(0, 0%, 100%);
-    border: none;
-    cursor: pointer;
-    border-radius: 4px;
-    font-weight: 900;
-    box-shadow: rgb(202, 202, 202) 0px 0px 10px;
-    /* padding-left: 10px; */
+::placeholder {
+  color: white;
 }
-button:hover{
-    background-color: hsl(0, 0%, 95%);
-    transition: .1s;
+button {
+  font-size: 16px;
+  background-color: hsl(0, 0%, 100%);
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  font-weight: 900;
+  box-shadow: rgb(202, 202, 202) 0px 0px 10px;
 }
-button.add-todo{
-    padding: 10px 15px;
+button:hover {
+  background-color: hsl(0, 0%, 95%);
+  transition: 0.1s;
+}
+button.add-todo {
+  padding: 10px 15px;
 }
 ul {
-    list-style: none;
-    padding: 0;
-    margin: 10px 0;
+  list-style: none;
+  padding: 0;
+  margin: 10px 0;
 }
-li{
-    text-align: justify;
+li {
+  text-align: justify;
 }
 li p {
-    display: inline-block;
-    margin: 0;
+  display: inline-block;
+  margin: 0;
 }
-.not-editing{
-    display: grid;        
-    grid-template-columns: 2vw 13vw 9vw;
-    align-items: center;
-    margin: 0 auto;
-    text-align: left;
+.not-editing {
+  display: grid;
+  grid-template-columns: 2vw 13vw 9vw;
+  align-items: center;
+  margin: 0 auto;
+  text-align: left;
 }
-div.not-editing{
-    background-color: rgba(42, 42, 215, 0.1);
-    border-radius: 10px;
-    padding: 10px 0;
+div.not-editing {
+  background-color: rgba(42, 42, 215, 0.1);
+  border-radius: 10px;
+  padding: 10px 0;
 }
-li
-li.not-editing, li.doing-box, li.not-editing{
-    margin: 10px 0
+li li.not-editing,
+li.doing-box,
+li.not-editing {
+  margin: 10px 0;
 }
-li.done-box{
-    margin: 10px 0;
-    background-color: rgba(42, 42, 215, 0.1);
-    border-radius: 10px;
-    padding: 10px 0;
-    
+li.done-box {
+  margin: 10px 0;
+  background-color: rgba(42, 42, 215, 0.1);
+  border-radius: 10px;
+  padding: 10px 0;
 }
-.editing{
-    display: grid;
-    grid-template-columns: 19vw 5vw;
-    margin: 0 auto;
+.editing {
+  display: grid;
+  grid-template-columns: 19vw 5vw;
+  margin: 0 auto;
 }
-.todo, .doing, .todo-done{
-    max-height: 35vh;
-    overflow-y: scroll;
+.todo,
+.doing,
+.todo-done {
+  max-height: 35vh;
+  overflow-y: scroll;
 }
-.doing-box{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: rgba(42, 42, 215, 0.1);
-    border-radius: 10px;
-    padding: 10px;
+.doing-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgba(42, 42, 215, 0.1);
+  border-radius: 10px;
+  padding: 10px;
 }
 
-.todo-loader{
-    height: 80vh;
-    display: flex;
-    align-items: center;
+.todo-loader {
+  height: 80vh;
+  display: flex;
+  align-items: center;
 }
-.todo-buttons, .doing-button{
-    display: flex;
-    gap: 10px
+.todo-buttons,
+.doing-button {
+  display: flex;
+  gap: 10px;
 }
-.add-card{
-    margin: 10px 0 15px 0;
+.add-card {
+  margin: 10px 0 15px 0;
 }
-.add-button{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
+.add-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }
-.close-button{
-    margin-left:10px
+.close-button {
+  margin-left: 10px;
 }
-/* #editItem{
-    text-transform: capitalize;
-} */
 @media screen and (max-width: 1025px) {
-    .todo-list{
-        display: grid;
-        grid-template-columns: 100%;
-        width: 70vw;
-    }
-    #todo-item{
-        width: 50vw
-    }
-    .not-editing {
-        grid-template-columns: 6vw 29vw 12vw;
-    }
-    .doing-box, .done-box{
-        display: grid;
-        grid-template-columns: 33vw 12vw 15vw;
-        width: 60vw;
-        margin: 0 auto;
-    }
-    .editing {
-        grid-template-columns: 55vw 12vw;
-    }
-    .todo-buttons, .doing-button{
-        display: grid;
-        grid-template-columns: 15vw 17vw;
-    }
+  .todo-list {
+    display: grid;
+    grid-template-columns: 100%;
+    width: 70vw;
+  }
+  #todo-item {
+    width: 50vw;
+  }
+  .not-editing {
+    grid-template-columns: 6vw 29vw 12vw;
+  }
+  .doing-box,
+  .done-box {
+    display: grid;
+    grid-template-columns: 33vw 12vw 15vw;
+    width: 60vw;
+    margin: 0 auto;
+  }
+  .editing {
+    grid-template-columns: 55vw 12vw;
+  }
+  .todo-buttons,
+  .doing-button {
+    display: grid;
+    grid-template-columns: 15vw 17vw;
+  }
 }
 
 @media screen and (max-width: 500px) {
-    .not-editing {
-        grid-template-columns: 12vw 40vw;
-    }
-    .todo-buttons, .doing-button{
-        margin: 10px 15px;
-        gap: 10px
-    }
-    .doing-box{
-        display: grid;
-        grid-template-columns: 60vw;
-        width: 60vw;
-        margin: 0 auto;
-    }
-    .doing-box > p{
-        margin-left: 10px
-    }
-    .editing {
-        grid-template-columns: 60vw;
-    }
-    .editing > button {
-        width: 20vw;
-        margin: 10px 0;
-    }
-    .done-box{
-        display: grid;
-        grid-template-columns: 6vw 50vw;
-        gap: 10px;
-    }
+  .not-editing {
+    grid-template-columns: 12vw 40vw;
+  }
+  .todo-buttons,
+  .doing-button {
+    margin: 10px 15px;
+    gap: 10px;
+  }
+  .doing-box {
+    display: grid;
+    grid-template-columns: 60vw;
+    width: 60vw;
+    margin: 0 auto;
+  }
+  .doing-box > p {
+    margin-left: 10px;
+  }
+  .editing {
+    grid-template-columns: 60vw;
+  }
+  .editing > button {
+    width: 20vw;
+    margin: 10px 0;
+  }
+  .done-box {
+    display: grid;
+    grid-template-columns: 6vw 50vw;
+    gap: 10px;
+  }
 }

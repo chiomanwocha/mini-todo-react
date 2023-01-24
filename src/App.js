@@ -1,12 +1,11 @@
-// import logo from './logo.svg';
-import './App.css';
-import LoginTodo from './todo-components/LoginTodo';
-import SignUp from './todo-components/SignUp';
-import TodoApp from './todo-components/TodoApp';
-import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import "./App.css";
+import LoginTodo from "./todo-components/LoginTodo";
+import SignUp from "./todo-components/SignUp";
+import TodoApp from "./todo-components/TodoApp";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "react-query";
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient();
 
 function App() {
   return (
@@ -19,10 +18,10 @@ function App() {
             </Route>
             <Route path="/signup">
               <SignUp></SignUp>
-            </Route> 
+            </Route>
             <Route path="/todo">
               <TodoApp></TodoApp>
-            </Route> 
+            </Route>
           </Switch>
         </div>
       </Router>
