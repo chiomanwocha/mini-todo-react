@@ -1,6 +1,7 @@
 .todo-app {
   margin: 0 auto;
-  height: 100vh;
+  padding-bottom: 50px
+  /* height: 100vh; */
 }
 .greetings {
   display: flex;
@@ -132,7 +133,7 @@ li.done-box {
 }
 
 .todo-loader {
-  height: 80vh;
+  height: 100vh;
   display: flex;
   align-items: center;
 }
