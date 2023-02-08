@@ -63,4 +63,7 @@ button:hover {
   .details {
     width: 50vw;
   }
+  div.container{
+    height: 100vh
+  }
 }
